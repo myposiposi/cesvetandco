@@ -1,0 +1,418 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cesvet & Co | The Art of Gifting</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@200;300;400;600&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --espresso: #3E2723;
+            --soft-cream: #FFFDF5;
+            --gold-muted: #BFA37E;
+            --white: #ffffff;
+            --wa-green: #25D366;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            font-family: 'Montserrat', sans-serif; 
+            background-color: var(--soft-cream); 
+            color: var(--espresso); 
+            overflow: hidden; 
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .progress-bar {
+            position: fixed; top: 0; left: 0; height: 4px; background: var(--gold-muted);
+            transition: width 0.5s ease; z-index: 1000; width: 20%;
+        }
+
+        .slide {
+            height: 100vh; width: 100vw; display: none;
+            padding: 40px 15px 120px; 
+            flex-direction: column; align-items: center; justify-content: flex-start;
+            overflow-y: auto; position: relative;
+        }
+        .slide.active { display: flex; animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://i.pinimg.com/1200x/e3/d7/9a/e3d79a54a92806cb6ac0a3b7135a11c0.jpg') center/cover;
+            justify-content: flex-start; text-align: center; color: white;
+        }
+        .hero-inner { 
+            border: 1px solid rgba(255,255,255,0.2); 
+            padding: 30px 15px; 
+            backdrop-filter: blur(10px); 
+            width: 90%;
+            margin-top: 10px;
+            border-radius: 15px;
+        }
+        
+        .main-title { 
+            letter-spacing: 5px; 
+            font-size: 1.8rem; 
+            text-transform: uppercase;
+            font-weight: 300;
+            margin-bottom: 5px;
+        }
+
+        .steps-wrapper {
+            margin-top: 25px;
+            text-align: left;
+            position: relative;
+            padding-left: 10px;
+        }
+        .step-entry {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 18px;
+            position: relative;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: stepFadeIn 0.5s ease forwards;
+        }
+        .step-entry:nth-child(2) { animation-delay: 0.3s; }
+        .step-entry:nth-child(3) { animation-delay: 0.6s; }
+        .step-entry:nth-child(4) { animation-delay: 0.9s; }
+        .step-entry:nth-child(5) { animation-delay: 1.2s; }
+
+        @keyframes stepFadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-number {
+            width: 22px;
+            height: 22px;
+            background: var(--gold-muted);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: bold;
+            flex-shrink: 0;
+            box-shadow: 0 0 10px rgba(191, 163, 126, 0.4);
+        }
+        .step-line {
+            position: absolute;
+            left: 10px;
+            top: 22px;
+            width: 1px;
+            height: 24px;
+            background: rgba(255,255,255,0.2);
+        }
+        .step-text-box { display: flex; flex-direction: column; }
+        .step-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--gold-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .step-sub {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.9);
+            line-height: 1.4;
+            font-weight: 300;
+            margin-top: 2px;
+        }
+
+        .sub-eng { font-size: 0.65rem; color: var(--gold-muted); letter-spacing: 5px; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; text-align: center; display: block; }
+        h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; margin-bottom: 20px; text-align: center; font-weight: 400; }
+
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 400px; }
+        .selectable { 
+            background: white; padding: 10px; border-radius: 12px; border: 1px solid transparent; 
+            transition: 0.3s; position: relative; text-align: center;
+        }
+        .selectable.selected { border-color: var(--gold-muted); box-shadow: 0 8px 20px rgba(191,163,126,0.15); }
+        .selected-badge { position: absolute; top: 8px; right: 8px; color: var(--gold-muted); opacity: 0; font-size: 0.9rem; z-index: 5; }
+        .selectable.selected .selected-badge { opacity: 1; }
+
+        .img-reveal-wrapper { width: 100%; aspect-ratio: 1/1; overflow: hidden; border-radius: 8px; margin-bottom: 8px; }
+        .img-holder { width: 100%; height: 100%; background-size: cover; background-position: center; transition: 1s; }
+        
+        .nav-footer {
+            position: fixed; bottom: 0; left: 0; width: 100%; padding: 20px;
+            background: var(--soft-cream); display: flex; gap: 10px; z-index: 999;
+            box-shadow: 0 -10px 25px rgba(0,0,0,0.05);
+        }
+        .btn-nav {
+            flex: 1; padding: 18px; border: none; background: var(--espresso); color: white;
+            font-family: 'Montserrat'; letter-spacing: 2px; text-transform: uppercase; font-size: 0.7rem; font-weight: 600;
+        }
+        .btn-nav.outline { background: transparent; border: 1px solid var(--espresso); color: var(--espresso); }
+        .btn-nav:disabled { opacity: 0.3; }
+
+        .box-card { padding: 15px; background: white; border: 1px solid #eee; display: flex; align-items: center; gap: 15px; width: 100%; text-align: left; border-radius: 10px; margin-bottom: 10px; }
+        .ramadhan-sub { font-size: 0.7rem; font-style: italic; color: var(--gold-muted); margin-top: -15px; margin-bottom: 20px; text-align: center; display: block; }
+        
+        .price-wrapper { display: flex; flex-direction: column; }
+        .price-old { text-decoration: line-through; color: #a1a1a1; font-size: 0.7rem; margin-bottom: -2px; }
+        .price-new { color: var(--gold-muted); font-family: 'Playfair Display'; font-weight: 700; font-size: 1rem; }
+    </style>
+</head>
+<body>
+
+    <div class="progress-bar" id="p-bar"></div>
+
+    <section class="slide hero active" id="slide-0">
+        <div class="hero-inner">
+            <h1 class="main-title">CESVET & CO</h1>
+            <p style="font-size: 0.65rem; letter-spacing: 2px; font-family: 'Montserrat'; text-transform: uppercase; opacity: 0.8; margin-bottom: 5px;">The Art of Gifting</p>
+            
+            <div class="steps-wrapper">
+                <p style="font-size: 0.85rem; font-weight: 600; margin-bottom: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; letter-spacing: 2px;">ALUR PEMESANAN</p>
+                
+                <div class="step-entry">
+                    <div class="step-number">01</div>
+                    <div class="step-line"></div>
+                    <div class="step-text-box">
+                        <span class="step-label">Varian Rasa</span>
+                        <span class="step-sub">Pilih rasa favorit Anda sebagai dasar kreasi.</span>
+                    </div>
+                </div>
+
+                <div class="step-entry">
+                    <div class="step-number">02</div>
+                    <div class="step-line"></div>
+                    <div class="step-text-box">
+                        <span class="step-label">Bentuk Kreasi</span>
+                        <span class="step-sub">Tentukan desain yang ingin Anda hadirkan.</span>
+                    </div>
+                </div>
+
+                <div class="step-entry">
+                    <div class="step-number">03</div>
+                    <div class="step-line"></div>
+                    <div class="step-text-box">
+                        <span class="step-label">Paket Box</span>
+                        <span class="step-sub">Lengkapi pilihan Anda dengan paket yang paling sesuai.</span>
+                    </div>
+                </div>
+
+                <div class="step-entry">
+                    <div class="step-number">04</div>
+                    <div class="step-text-box">
+                        <span class="step-label">Konfirmasi Pesanan</span>
+                        <span class="step-sub">Sampaikan via WhatsApp, kami siapkan dengan penuh perhatian.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-footer">
+            <button class="btn-nav" onclick="goTo(1)">Mulai Pesanan</button>
+        </div>
+    </section>
+
+    <section class="slide" id="slide-1">
+        <span class="sub-eng">Step 01: The Flavor</span>
+        <h2>Pilih Varian Rasa</h2>
+        <div class="options-grid">
+            <div class="selectable" onclick="pick('flavor', 'Sora (Strawberry Milk)', this)">
+                <i class="fas fa-check-circle selected-badge"></i>
+                <div class="img-reveal-wrapper"><div class="img-holder" style="background-image: url('https://i.pinimg.com/736x/8d/fc/e3/8dfce39c8c3bb7d37d4000b15dbd4c2d.jpg');"></div></div>
+                <span style="font-size: 0.8rem; font-weight: 600; display: block; margin-top: 5px;">Sora</span>
+                <span style="font-size: 0.65rem; color: #888; margin-top: 2px; display: block;">Strawberry Milk</span>
+            </div>
+            <div class="selectable" onclick="pick('flavor', 'Mori (Matcha Milk)', this)">
+                <i class="fas fa-check-circle selected-badge"></i>
+                <div class="img-reveal-wrapper"><div class="img-holder" style="background-image: url('https://i.pinimg.com/1200x/d0/96/75/d096758267e41958e0f58b0a86593a50.jpg');"></div></div>
+                <span style="font-size: 0.8rem; font-weight: 600; display: block; margin-top: 5px;">Mori</span>
+                <span style="font-size: 0.65rem; color: #888; margin-top: 2px; display: block;">Matcha Milk</span>
+            </div>
+            <div class="selectable" onclick="pick('flavor', 'Oceana (Blueberry Milk)', this)">
+                <i class="fas fa-check-circle selected-badge"></i>
+                <div class="img-reveal-wrapper"><div class="img-holder" style="background-image: url('https://i.pinimg.com/736x/6a/b4/fd/6ab4fdf13ef59161ac370b6396dfa0cf.jpg');"></div></div>
+                <span style="font-size: 0.8rem; font-weight: 600; display: block; margin-top: 5px;">Oceana</span>
+                <span style="font-size: 0.65rem; color: #888; margin-top: 2px; display: block;">Blueberry Milk</span>
+            </div>
+            <div class="selectable" onclick="pick('flavor', 'Sunny (Mango Milk)', this)">
+                <i class="fas fa-check-circle selected-badge"></i>
+                <div class="img-reveal-wrapper"><div class="img-holder" style="background-image: url('https://i.pinimg.com/1200x/d9/1d/a8/d91da81cda76b9cf9ac12d7b9b6d53f7.jpg');"></div></div>
+                <span style="font-size: 0.8rem; font-weight: 600; display: block; margin-top: 5px;">Sunny</span>
+                <span style="font-size: 0.65rem; color: #888; margin-top: 2px; display: block;">Mango Milk</span>
+            </div>
+            <div class="selectable" onclick="pick('flavor', 'Luna (Grape Milk)', this)" style="grid-column: span 2; width: 50%; margin: 0 auto;">
+                <i class="fas fa-check-circle selected-badge"></i>
+                <div class="img-reveal-wrapper"><div class="img-holder" style="background-image: url('https://i.pinimg.com/1200x/dd/0f/e9/dd0fe91d142294f4287473fb42ddfc5b.jpg');"></div></div>
+                <span style="font-size: 0.8rem; font-weight: 600; display: block; margin-top: 5px;">Luna</span>
+                <span style="font-size: 0.65rem; color: #888; margin-top: 2px; display: block;">Grape Milk</span>
+            </div>
+        </div>
+        <div class="nav-footer">
+            <button class="btn-nav outline" onclick="goTo(0)">Kembali</button>
+            <button class="btn-nav" id="next-1" disabled onclick="goTo(2)">Lanjut</button>
+        </div>
+    </section>
+
+    <section class="slide" id="slide-2">
+        <span class="sub-eng">Step 02: Artful Shape</span>
+        <h2>Pilih Bentuk</h2>
+        <div style="width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 12px;">
+            <div class="selectable" onclick="pick('shape', 'Flower & Romantic Series', this)" style="display: flex; align-items: center; gap: 15px; text-align: left; padding: 15px;">
+                <div class="img-reveal-wrapper" style="width: 80px; margin-bottom: 0;"><div class="img-holder" style="background-image: url('https://i.pinimg.com/736x/2c/e5/cb/2ce5cb51e9d16161b189e71112285372.jpg');"></div></div>
+                <div>
+                    <div style="font-weight: 600; font-size: 0.9rem;">Flower & Romantic Series</div>
+                    <div style="font-size: 0.7rem; color: #888;">Artistik & Memikat</div>
+                </div>
+            </div>
+            <div class="selectable" onclick="pick('shape', 'Bunny Series', this)" style="display: flex; align-items: center; gap: 15px; text-align: left; padding: 15px;">
+                <div class="img-reveal-wrapper" style="width: 80px; margin-bottom: 0;"><div class="img-holder" style="background-image: url('https://i.pinimg.com/736x/36/ff/83/36ff837b8712824963d9d3b0fbd1fc66.jpg');"></div></div>
+                <div>
+                    <div style="font-weight: 600; font-size: 0.9rem;">Bunny Series</div>
+                    <div style="font-size: 0.7rem; color: #888;">Lucu & Menggemaskan</div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-footer">
+            <button class="btn-nav outline" onclick="goTo(1)">Kembali</button>
+            <button class="btn-nav" id="next-2" disabled onclick="goTo(3)">Lanjut</button>
+        </div>
+    </section>
+
+    <section class="slide" id="slide-3">
+        <span class="sub-eng">Step 03: The Curation</span>
+        <h2>Pilih Paket Box</h2>
+        <span class="ramadhan-sub">Ramadhan Appreciation Edition — Limited for This Season</span>
+        <div style="width: 100%; max-width: 400px;">
+            <div class="selectable box-card" onclick="pickBox('Petite Box (isi 4 cup)', 43000, this)">
+                <img src="https://i.pinimg.com/1200x/10/13/c1/1013c15a7fc175e3dd70c37f2119470f.jpg" style="width: 65px; height: 65px; object-fit: cover; border-radius: 6px;">
+                <div style="flex-grow: 1;">
+                    <div style="font-weight: 600; font-size: 0.9rem;">Petite Box (isi 4 cup)</div>
+                    <div class="price-wrapper">
+                        <span class="price-old">Rp 48.000</span>
+                        <span class="price-new">Rp 43.000</span>
+                    </div>
+                </div>
+            </div>
+            <div class="selectable box-card" onclick="pickBox('Classic Box (isi 6 cup)', 63000, this)">
+                <img src="https://i.pinimg.com/1200x/80/60/7a/80607a146019efd5683b0136a2a4a3b1.jpg" style="width: 65px; height: 65px; object-fit: cover; border-radius: 6px;">
+                <div style="flex-grow: 1;">
+                    <div style="font-weight: 600; font-size: 0.9rem;">Classic Box (isi 6 cup)</div>
+                    <div class="price-wrapper">
+                        <span class="price-old">Rp 70.000</span>
+                        <span class="price-new">Rp 64.000</span>
+                    </div>
+                </div>
+            </div>
+            <div class="selectable box-card" onclick="pickBox('Grand Box (isi 9 cup)', 92000, this)">
+                <img src="https://i.pinimg.com/736x/52/1d/96/521d968de82f321a5b3e79e7a3bf38d8.jpg" style="width: 65px; height: 65px; object-fit: cover; border-radius: 6px;">
+                <div style="flex-grow: 1;">
+                    <div style="font-weight: 600; font-size: 0.9rem;">Grand Box (isi 9 cup)</div>
+                    <div class="price-wrapper">
+                        <span class="price-old">Rp 100.000</span>
+                        <span class="price-new">Rp 92.000</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-footer">
+            <button class="btn-nav outline" onclick="goTo(2)">Kembali</button>
+            <button class="btn-nav" id="btn-add" disabled onclick="add()">Tambahkan</button>
+        </div>
+    </section>
+
+    <section class="slide" id="slide-4">
+        <span class="sub-eng">Final Step</span>
+        <h2>Pesanan Anda</h2>
+        <div id="summary-list" style="width: 100%; max-width: 400px;"></div>
+        <div style="width: 100%; max-width: 400px; border-top: 1px solid var(--gold-muted); margin-top: 15px; padding-top: 15px; display: flex; justify-content: space-between;">
+            <span style="font-weight: 600;">TOTAL</span>
+            <span id="total-val" style="font-weight: 700; color: var(--gold-muted);">Rp 0</span>
+        </div>
+        <div class="nav-footer">
+            <button class="btn-nav outline" onclick="goTo(1)">+ Lagi</button>
+            <button class="btn-nav" style="background: var(--wa-green);" onclick="send()">Kirim WA</button>
+        </div>
+    </section>
+
+    <script>
+        let cart = [];
+        let selection = { flavor: '', shape: '', box: '', price: 0 };
+
+        function goTo(index) {
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            document.getElementById('slide-' + index).classList.add('active');
+            document.getElementById('p-bar').style.width = ((index + 1) / 5 * 100) + '%';
+        }
+
+        function pick(type, val, el) {
+            selection[type] = val;
+            el.parentElement.querySelectorAll('.selectable').forEach(s => s.classList.remove('selected'));
+            el.classList.add('selected');
+            if(type === 'flavor') document.getElementById('next-1').disabled = false;
+            if(type === 'shape') document.getElementById('next-2').disabled = false;
+        }
+
+        function pickBox(name, price, el) {
+            selection.box = name;
+            selection.price = price;
+            el.parentElement.querySelectorAll('.selectable').forEach(s => s.classList.remove('selected'));
+            el.classList.add('selected');
+            document.getElementById('btn-add').disabled = false;
+        }
+
+        function add() {
+            cart.push({...selection});
+            selection = { flavor: '', shape: '', box: '', price: 0 };
+            document.querySelectorAll('.selectable').forEach(s => s.classList.remove('selected'));
+            document.getElementById('next-1').disabled = true;
+            document.getElementById('next-2').disabled = true;
+            document.getElementById('btn-add').disabled = true;
+            render();
+            goTo(4);
+        }
+
+        function render() {
+            const list = document.getElementById('summary-list');
+            let total = 0;
+            list.innerHTML = '';
+            cart.forEach((item, i) => {
+                total += item.price;
+                list.innerHTML += `
+                    <div style="background:white; padding:12px; margin-bottom:8px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; font-size:0.8rem;">
+                        <div><b>${item.box}</b><br><small>${item.flavor} | ${item.shape}</small></div>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span>Rp ${item.price.toLocaleString('id-ID')}</span>
+                            <i class="fas fa-trash" onclick="remove(${i})" style="color:#e74c3c"></i>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('total-val').innerText = 'Rp ' + total.toLocaleString('id-ID');
+        }
+
+        function remove(i) {
+            cart.splice(i, 1);
+            render();
+            if(cart.length === 0) goTo(1);
+        }
+
+        function send() {
+            if(cart.length === 0) return;
+            const phone = "62895392060022";
+            let txt = "Halo Cesvet & Co! ✨\n\nSaya ingin memesan menu berikut:\n\n";
+            let total = 0;
+            cart.forEach((item, i) => {
+                total += item.price;
+                txt += `${i+1}. *${item.box}*\n   - Rasa: ${item.flavor}\n   - Bentuk: ${item.shape}\n\n`;
+            });
+            txt += `Total Estimasi: *Rp ${total.toLocaleString('id-ID')}*\n\nSaya ingin melakukan pemesanan untuk daftar di atas. Mohon info selanjutnya untuk pengisian data pengiriman.`;
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(txt)}`, '_blank');
+        }
+    </script>
+</body>
+</html>
